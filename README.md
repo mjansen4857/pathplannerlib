@@ -11,4 +11,4 @@ If you attempt to work with this project in VSCode with WPILib plugins, it will 
 
 The maven artifacts can be built using `./gradlew publish`
 
-The built library will be located in /build/repos
+The built library will be located in `/build/repos`
