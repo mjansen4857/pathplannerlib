@@ -74,7 +74,7 @@ std::vector<PathPlannerTrajectory::PathPlannerState> PathPlannerTrajectory::join
 
            if(t == 0.0){
                state.velocity = startPoint.velocityOverride;
-           }else if(t == 1.0){
+           }else if(t >= 1.0){
                state.velocity = endPoint.velocityOverride;
            }else {
                state.velocity = maxVel;
@@ -112,7 +112,9 @@ void PathPlannerTrajectory::calculateMaxVel(std::vector<PathPlannerTrajectory::P
 }
 
 void PathPlannerTrajectory::calculateVelocity(std::vector<PathPlannerTrajectory::PathPlannerState> *states, std::vector<PathPlannerTrajectory::Waypoint> pathPoints, units::meters_per_second_squared_t maxAccel){
-    states->data()[0].velocity = 0_mps;
+    if(pathPoints[0].velocityOverride == -1_mps){
+        states->data()[0].velocity = 0_mps;
+    }
 
     for(size_t i = 1; i < states->size(); i++){
         units::meters_per_second_t v0 = states->data()[i - 1].velocity;

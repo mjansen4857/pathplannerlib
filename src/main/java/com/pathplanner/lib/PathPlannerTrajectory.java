@@ -106,7 +106,9 @@ public class PathPlannerTrajectory extends Trajectory {
     }
 
     private static void calculateVelocity(List<PathPlannerState> states, ArrayList<Waypoint> pathPoints, double maxAccel){
-        states.get(0).velocityMetersPerSecond = 0;
+        if(pathPoints.get(0).velOverride == -1){
+            states.get(0).velocityMetersPerSecond = 0;
+        }
 
         for(int i = 1; i < states.size(); i++){
             double v0 = states.get(i - 1).velocityMetersPerSecond;
@@ -230,7 +232,7 @@ public class PathPlannerTrajectory extends Trajectory {
 
                 if(t == 0.0){
                     state.velocityMetersPerSecond = startPoint.velOverride;
-                }else if(t == 1.0){
+                }else if(t >= 1.0){
                     state.velocityMetersPerSecond = endPoint.velOverride;
                 }else {
                     state.velocityMetersPerSecond = maxVel;
