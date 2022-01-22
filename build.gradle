@@ -28,6 +28,7 @@ dependencies {
     implementation 'edu.wpi.first.wpilibj:wpilibj-java:2022.+'
     implementation 'edu.wpi.first.wpiutil:wpiutil-java:2022.+'
     implementation 'edu.wpi.first.wpimath:wpimath-java:2022.+'
+    implementation 'edu.wpi.first.wpilibNewCommands:wpilibNewCommands-java:2022.+'
     implementation 'edu.wpi.first.hal:hal-java:2022.+'
     implementation "org.ejml:ejml-simple:0.38"
     implementation "com.fasterxml.jackson.core:jackson-annotations:2.10.0"
