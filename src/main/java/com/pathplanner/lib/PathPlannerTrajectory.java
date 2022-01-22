@@ -182,7 +182,11 @@ public class PathPlannerTrajectory extends Trajectory {
                 now.angularAcceleration = now.angularVelocity.minus(last.angularVelocity).times(1 / dt);
             }
 
-            now.curvatureRadPerMeter = 1 / now.curveRadius;
+            if(Double.isInfinite(now.curveRadius) || Double.isNaN(now.curveRadius) || now.curveRadius == 0){
+                now.curvatureRadPerMeter = 0;
+            }else{
+                now.curvatureRadPerMeter = 1 / now.curveRadius;
+            }
         }
     }
 
