@@ -3,6 +3,7 @@
 #include <frc/geometry/Rotation2d.h>
 #include <frc/geometry/Translation2d.h>
 #include <frc/geometry/Pose2d.h>
+#include <frc/trajectory/Trajectory.h>
 #include <vector>
 #include <units/length.h>
 #include <units/velocity.h>
@@ -72,5 +73,6 @@ namespace pathplanner{
             PathPlannerState *getInitialState() { return getState(0); }
             PathPlannerState *getEndState() { return getState(numStates() - 1); }
             units::second_t getTotalTime() { return getEndState()->time; }
+            frc::Trajectory asWPILibTrajectory();
     };
 }
