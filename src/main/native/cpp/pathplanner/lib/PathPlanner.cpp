@@ -3,7 +3,6 @@
 #include <frc/geometry/Rotation2d.h>
 #include <frc/Filesystem.h>
 #include <wpi/SmallString.h>
-#include <wpi/raw_istream.h>
 #include <wpi/json.h>
 #include <units/length.h>
 #include <units/angle.h>
@@ -26,8 +25,18 @@ PathPlannerTrajectory PathPlanner::loadPath(std::string name, units::meters_per_
         throw std::runtime_error(("Cannot open file: " + filePath));
     }
 
+    return loadPathFromIstream(input, maxVel, maxAccel, reversed);
+}
+
+PathPlannerTrajectory PathPlanner::loadPathFromString(std::string value, units::meters_per_second_t maxVel, units::meters_per_second_squared_t maxAccel, bool reversed){
+    wpi::raw_mem_istream istream(value);
+
+    return loadPathFromIstream(istream, maxVel, maxAccel, reversed);
+}
+
+PathPlannerTrajectory PathPlanner::loadPathFromIstream(wpi::raw_istream &value, units::meters_per_second_t maxVel, units::meters_per_second_squared_t maxAccel, bool reversed){
     wpi::json json;
-    input >> json;
+    value >> json;
 
     std::vector<PathPlannerTrajectory::Waypoint> waypoints;
     for (wpi::json::reference waypoint : json.at("waypoints")){

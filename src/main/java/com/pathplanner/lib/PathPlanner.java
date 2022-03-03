@@ -33,7 +33,17 @@ public class PathPlanner {
 
             String fileContent = fileContentBuilder.toString();
 
-            JSONObject json = (JSONObject) new JSONParser().parse(fileContent);
+            return loadPathFromString(fileContent, maxVel, maxAccel, reversed);
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static PathPlannerTrajectory loadPathFromString(String content, double maxVel, double maxAccel, boolean reversed) {
+        try
+        {
+            JSONObject json = (JSONObject) new JSONParser().parse(content);
             JSONArray jsonWaypoints = (JSONArray) json.get("waypoints");
 
             ArrayList<PathPlannerTrajectory.Waypoint> waypoints = new ArrayList<>();
@@ -104,6 +114,10 @@ public class PathPlanner {
      */
     public static PathPlannerTrajectory loadPath(String name, double maxVel, double maxAccel){
         return loadPath(name, maxVel, maxAccel, false);
+    }
+
+    public static PathPlannerTrajectory loadPathFromString(String content, double maxVel, double maxAccel){
+        return loadPathFromString(content, maxVel, maxAccel, false);
     }
 
     private static PathPlannerTrajectory joinPaths(ArrayList<PathPlannerTrajectory> paths){
