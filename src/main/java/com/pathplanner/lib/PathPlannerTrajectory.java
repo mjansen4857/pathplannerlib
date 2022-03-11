@@ -75,14 +75,14 @@ public class PathPlannerTrajectory extends Trajectory {
 
     private static List<State> generatePath(ArrayList<Waypoint> pathPoints, double maxVel, double maxAccel, boolean reversed){
         List<PathPlannerState> joined = joinSplines(pathPoints, maxVel, PathPlanner.resolution);
-        calculateMaxVel(joined, maxVel, maxAccel);
+        calculateMaxVel(joined, maxVel, maxAccel, reversed);
         calculateVelocity(joined, pathPoints, maxAccel);
         recalculateValues(joined, reversed);
 
         return new ArrayList<>(joined);
     }
 
-    private static void calculateMaxVel(List<PathPlannerState> states, double maxVel, double maxAccel){
+    private static void calculateMaxVel(List<PathPlannerState> states, double maxVel, double maxAccel, boolean reversed){
         for(int i = 0; i < states.size(); i++){
             double radius;
             if(i == states.size() - 1){
@@ -93,12 +93,16 @@ public class PathPlannerTrajectory extends Trajectory {
                 radius = calculateRadius(states.get(i - 1), states.get(i), states.get(i + 1));
             }
 
+            if(reversed){
+                radius *= -1;
+            }
+
             if(!Double.isFinite(radius) || Double.isNaN(radius)){
                 states.get(i).velocityMetersPerSecond = Math.min(maxVel, states.get(i).velocityMetersPerSecond);
             }else{
                 states.get(i).curveRadius = radius;
 
-                double maxVCurve = Math.sqrt(maxAccel * radius);
+                double maxVCurve = Math.sqrt(maxAccel * Math.abs(radius));
 
                 states.get(i).velocityMetersPerSecond = Math.min(maxVCurve, states.get(i).velocityMetersPerSecond);
             }
@@ -255,13 +259,18 @@ public class PathPlannerTrajectory extends Trajectory {
         Translation2d b = s1.poseMeters.getTranslation();
         Translation2d c = s2.poseMeters.getTranslation();
 
+        Translation2d vba = a.minus(b);
+        Translation2d vbc = c.minus(b);
+        double cross_z = (vba.getX() * vbc.getY()) - (vba.getY() * vbc.getX());
+        double sign = (cross_z < 0) ? 1 : -1;
+
         double ab = a.getDistance(b);
         double bc = b.getDistance(c);
         double ac = a.getDistance(c);
 
         double p = (ab + bc + ac) / 2;
         double area = Math.sqrt(Math.abs(p * (p - ab) * (p - bc) * (p - ac)));
-        return (ab * bc * ac) / (4 * area);
+        return sign * (ab * bc * ac) / (4 * area);
     }
 
     public static class PathPlannerState extends State{
@@ -283,7 +292,7 @@ public class PathPlannerTrajectory extends Trajectory {
                 return endVal.interpolate(this, 1 - t);
             }
 
-            lerpedState.velocityMetersPerSecond = velocityMetersPerSecond + (velocityMetersPerSecond * deltaT);
+            lerpedState.velocityMetersPerSecond = GeometryUtil.doubleLerp(velocityMetersPerSecond, endVal.velocityMetersPerSecond, t);
             lerpedState.positionMeters = (velocityMetersPerSecond * deltaT) + (0.5 * accelerationMetersPerSecondSq * Math.pow(deltaT, 2));
             lerpedState.accelerationMetersPerSecondSq = GeometryUtil.doubleLerp(accelerationMetersPerSecondSq, endVal.accelerationMetersPerSecondSq, t);
             Translation2d newTrans = GeometryUtil.translationLerp(poseMeters.getTranslation(), endVal.poseMeters.getTranslation(), t);

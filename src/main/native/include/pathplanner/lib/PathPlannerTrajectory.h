@@ -56,7 +56,7 @@ namespace pathplanner{
         private:
             std::vector<PathPlannerState> states;
             std::vector<PathPlannerState> joinSplines(std::vector<Waypoint> pathPoints, units::meters_per_second_t maxVel, double step);
-            void calculateMaxVel(std::vector<PathPlannerState> *states, units::meters_per_second_t maxVel, units::meters_per_second_squared_t maxAccel);
+            void calculateMaxVel(std::vector<PathPlannerState> *states, units::meters_per_second_t maxVel, units::meters_per_second_squared_t maxAccel, bool reversed);
             void calculateVelocity(std::vector<PathPlannerState> *states, std::vector<Waypoint> pathPoints, units::meters_per_second_squared_t maxAccel);
             void recalculateValues(std::vector<PathPlannerState> *states, bool reversed);
             units::meter_t calculateRadius(PathPlannerState s0, PathPlannerState s1, PathPlannerState s2);

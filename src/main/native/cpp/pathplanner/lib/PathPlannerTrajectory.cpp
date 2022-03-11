@@ -9,7 +9,7 @@ using namespace pathplanner;
 
 PathPlannerTrajectory::PathPlannerTrajectory(std::vector<Waypoint> waypoints, units::meters_per_second_t maxVelocity, units::meters_per_second_squared_t maxAcceleration, bool reversed){
     std::vector<PathPlannerState> joined = this->joinSplines(waypoints, maxVelocity, PathPlanner::resolution);
-    this->calculateMaxVel(&joined, maxVelocity, maxAcceleration);
+    this->calculateMaxVel(&joined, maxVelocity, maxAcceleration, reversed);
     this->calculateVelocity(&joined, waypoints, maxAcceleration);
     this->recalculateValues(&joined, reversed);
 
@@ -88,7 +88,7 @@ std::vector<PathPlannerTrajectory::PathPlannerState> PathPlannerTrajectory::join
    return states;
 }
 
-void PathPlannerTrajectory::calculateMaxVel(std::vector<PathPlannerTrajectory::PathPlannerState> *states, units::meters_per_second_t maxVel, units::meters_per_second_squared_t maxAccel){
+void PathPlannerTrajectory::calculateMaxVel(std::vector<PathPlannerTrajectory::PathPlannerState> *states, units::meters_per_second_t maxVel, units::meters_per_second_squared_t maxAccel, bool reversed){
     for(size_t i = 0; i < states->size(); i++){
         units::meter_t radius;
         if(i == states->size() - 1){
@@ -99,10 +99,14 @@ void PathPlannerTrajectory::calculateMaxVel(std::vector<PathPlannerTrajectory::P
             radius = calculateRadius(states->data()[i - 1], states->data()[i], states->data()[i + 1]);
         }
 
+        if(reversed){
+            radius *= -1;
+        }
+
         if(!GeometryUtil::isFinite(radius) || GeometryUtil::isNaN(radius)){
             states->data()[i].velocity = units::math::min(maxVel, states->data()[i].velocity);
         }else{
-            states->data()[i].curveRadius = radius;
+            states->data()[i].curveRadius = units::math::abs(radius);
 
             units::meters_per_second_t maxVCurve = units::math::sqrt(maxAccel * radius);
 
@@ -201,13 +205,18 @@ units::meter_t PathPlannerTrajectory::calculateRadius(PathPlannerTrajectory::Pat
     frc::Translation2d b = s1.pose.Translation();
     frc::Translation2d c = s2.pose.Translation();
 
+    frc::Translation2d vba = a - b;
+    frc::Translation2d vbc = c - b;
+    double cross_z = (double)(vba.X() * vbc.Y()) - (double)(vba.Y() * vbc.X());
+    double sign = (cross_z < 0.0) ? 1.0 : -1.0;
+
     units::meter_t ab = a.Distance(b);
     units::meter_t bc = b.Distance(c);
     units::meter_t ac = a.Distance(c);
 
     units::meter_t p = (ab + bc + ac) / 2;
     units::square_meter_t area = units::math::sqrt(units::math::abs(p * (p - ab) * (p - bc) * (p - ac)));
-    return (ab * bc * ac) / (4 * area);
+    return sign * (ab * bc * ac) / (4 * area);
 }
 
 PathPlannerTrajectory::PathPlannerState PathPlannerTrajectory::sample(units::second_t time){
@@ -244,7 +253,7 @@ PathPlannerTrajectory::PathPlannerState PathPlannerTrajectory::PathPlannerState:
         return endVal.interpolate(*this, 1-t);
     }
 
-    lerpedState.velocity = velocity + (acceleration * deltaT);
+    lerpedState.velocity = GeometryUtil::unitLerp(velocity, endVal.velocity, t);
     lerpedState.position = (velocity * deltaT) + (0.5 * acceleration * (deltaT * deltaT));
     lerpedState.acceleration = GeometryUtil::unitLerp(acceleration, endVal.acceleration, t);
     frc::Translation2d newTrans = GeometryUtil::translationLerp(pose.Translation(), endVal.pose.Translation(), t);

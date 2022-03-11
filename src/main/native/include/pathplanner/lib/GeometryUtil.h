@@ -16,6 +16,7 @@ namespace pathplanner {
     class GeometryUtil {
     public:
         static units::second_t unitLerp(units::second_t startVal, units::second_t endVal, double t);
+        static units::meters_per_second_t unitLerp(units::meters_per_second_t startVal, units::meters_per_second_t endVal, double t);
         static units::meters_per_second_squared_t unitLerp(units::meters_per_second_squared_t startVal, units::meters_per_second_squared_t endVal, double t);
         static units::radians_per_second_t unitLerp(units::radians_per_second_t startVal, units::radians_per_second_t endVal, double t);
         static units::radians_per_second_squared_t unitLerp(units::radians_per_second_squared_t startVal, units::radians_per_second_squared_t endVal, double t);
