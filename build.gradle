@@ -35,6 +35,8 @@ dependencies {
     implementation "com.fasterxml.jackson.core:jackson-core:2.10.0"
     implementation "com.fasterxml.jackson.core:jackson-databind:2.10.0"
     implementation 'edu.wpi.first.thirdparty.frc2022.opencv:opencv-java:4.5.2-1'
+
+    testImplementation 'junit:junit:4.12'
 }
 
 // Set up exports properly
@@ -81,4 +83,8 @@ apply from: 'publish.gradle'
 
 wrapper {
   gradleVersion '6.0.1'
+}
+
+test {
+   useJUnit()
 }
