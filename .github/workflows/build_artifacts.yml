@@ -31,3 +31,45 @@ jobs:
           name: roborio-linux
           path: 'build/repos/releases/com/pathplanner/lib'
           retention-days: 7
+          
+  build-windows:
+    name: Build windows desktop
+    runs-on: windows-latest
+    
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        
+      - name: Compile and run tests
+        run: ./gradlew build
+        
+      - name: Publish
+        run: ./gradlew publish
+        
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows
+          path: 'build/repos/releases/com/pathplanner/lib'
+          retention-days: 7
+
+  build-macos:
+    name: Build macOS desktop
+    runs-on: macos-latest
+    
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        
+      - name: Compile and run tests
+        run: ./gradlew build
+        
+      - name: Publish
+        run: ./gradlew publish
+        
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: macos
+          path: 'build/repos/releases/com/pathplanner/lib'
+          retention-days: 7
