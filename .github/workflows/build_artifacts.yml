@@ -32,40 +32,32 @@ jobs:
           path: 'build/repos/releases/com/pathplanner/lib'
           retention-days: 7
           
-  build-windows:
-    name: Build windows desktop
-    runs-on: windows-2019
+#   build-windows:
+#     name: Build windows desktop
+#     runs-on: windows-2019
     
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v2
+#     steps:
+#       - name: Checkout repo
+#         uses: actions/checkout@v2
        
-      - name: Setup jdk
-        uses: actions/setup-java@v2
-        with:
-          java-version: '11'
-          distribution: 'microsoft'
+#       - name: Setup jdk
+#         uses: actions/setup-java@v2
+#         with:
+#           java-version: '11'
+#           distribution: 'microsoft'
         
-      - name: Prepare vcpkg
-        uses: lukka/run-vcpkg@v7
-        with:
-          vcpkgArguments: opencv
-          vcpkgDirectory: ${{ runner.workspace }}/vcpkg
-          vcpkgTriplet: x64-windows
-          vcpkgGitCommitId: d781bd9ca77ac3dc2f13d88169021d48459c665f # HEAD on 2021-07-25
+#       - name: Compile and run tests
+#         run: ./gradlew build
         
-      - name: Compile and run tests
-        run: ./gradlew build
+#       - name: Publish
+#         run: ./gradlew publish
         
-      - name: Publish
-        run: ./gradlew publish
-        
-      - name: Upload artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: windows
-          path: 'build/repos/releases/com/pathplanner/lib'
-          retention-days: 7
+#       - name: Upload artifact
+#         uses: actions/upload-artifact@v3
+#         with:
+#           name: windows
+#           path: 'build/repos/releases/com/pathplanner/lib'
+#           retention-days: 7
 
   build-macos:
     name: Build macOS desktop
