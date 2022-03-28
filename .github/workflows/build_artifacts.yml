@@ -16,6 +16,9 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
         
+      - name: Install roborio toolchain
+        run: ./gradlew installRoboRIOToolchain
+        
       - name: Compile and run tests
         run: ./gradlew build
         
@@ -27,3 +30,4 @@ jobs:
         with:
           name: roborio-linux
           path: 'build/repos/releases/com/pathplanner/lib'
+          retention-days: 7
