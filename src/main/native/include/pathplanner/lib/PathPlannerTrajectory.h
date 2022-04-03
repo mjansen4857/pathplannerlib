@@ -66,13 +66,62 @@ namespace pathplanner{
             PathPlannerTrajectory(std::vector<PathPlannerState> states);
             PathPlannerTrajectory();
 
+            /**
+             * @brief Sample the path at a point in time
+             * 
+             * @param time The time to sample
+             * @return The state at the given point in time
+             */
             PathPlannerState sample(units::second_t time);
+
+            /**
+             * @brief Get all of the states in the path
+             * 
+             * @return Pointer to a vector of all states
+             */
             std::vector<PathPlannerState> *getStates() { return &this->states; }
+            
+            /**
+             * @brief Get the total number of states in the path
+             * 
+             * @return The number of states
+             */
             int numStates() { return getStates()->size(); }
+
+            /**
+             * @brief Get a state in the path based on its index. In most cases, using sample() is a better method.
+             * 
+             * @param i The index of the state
+             * @return Pointer to the state at the given index
+             */
             PathPlannerState *getState(int i) { return &getStates()->data()[i]; }
+
+            /**
+             * @brief Get the initial state of the path
+             * 
+             * @return Pointer to the first state of the path
+             */
             PathPlannerState *getInitialState() { return getState(0); }
+
+            /**
+             * @brief Get the end state of the path
+             * 
+             * @return Pointer to the last state in the path
+             */
             PathPlannerState *getEndState() { return getState(numStates() - 1); }
+            
+            /**
+             * @brief Get the total runtime of the path
+             * 
+             * @return The path runtime
+             */
             units::second_t getTotalTime() { return getEndState()->time; }
+            
+            /**
+             * @brief Convert this path to a WPILib compatible trajectory
+             * 
+             * @return The path as a WPILib trajectory 
+             */
             frc::Trajectory asWPILibTrajectory();
     };
 }
