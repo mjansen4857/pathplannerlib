@@ -47,7 +47,7 @@ jobs:
           distribution: 'microsoft'
         
       - name: Compile and run tests
-        run: ./gradlew build
+        run: ./gradlew build --stacktrace
         
       - name: Publish
         run: ./gradlew publish
