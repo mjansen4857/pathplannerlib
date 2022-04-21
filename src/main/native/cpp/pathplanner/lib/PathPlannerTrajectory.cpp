@@ -195,7 +195,11 @@ void PathPlannerTrajectory::recalculateValues(std::vector<PathPlannerTrajectory:
         if(!GeometryUtil::isFinite(now->curveRadius) || GeometryUtil::isNaN(now->curveRadius) || now->curveRadius() == 0){
             now->curvature = units::curvature_t{0};
         }else{
-            now->curvature = units::curvature_t{1 / now->curveRadius()};
+            auto sign = 1.0;
+            if (reversed) {
+                sign = -1.0;
+            }
+            now->curvature = units::curvature_t{sign / now->curveRadius()};
         }
     }
 }

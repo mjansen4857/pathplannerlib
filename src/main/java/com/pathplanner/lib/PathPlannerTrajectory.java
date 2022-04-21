@@ -189,7 +189,11 @@ public class PathPlannerTrajectory extends Trajectory {
             if(Double.isInfinite(now.curveRadius) || Double.isNaN(now.curveRadius) || now.curveRadius == 0){
                 now.curvatureRadPerMeter = 0;
             }else{
-                now.curvatureRadPerMeter = 1 / now.curveRadius;
+                var sign = 1.0;
+                if (reversed) {
+                    sign = -1.0;
+                }
+                now.curvatureRadPerMeter = sign / now.curveRadius;
             }
         }
     }
